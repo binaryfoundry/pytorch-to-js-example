@@ -113,12 +113,12 @@ def lmap(func, data):
     return list(map(func, data))
 
 # No. of data items for training and for testing
-train_data_size = 100000
+train_data_size = 30000
 test_data_size = 8000
 
 # No. of samples used for back propagation gradient
 batch_size = 16
-epochs = 2
+epochs = 15
 
 # hyper-parameter
 learning_rate = 1e-3
