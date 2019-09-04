@@ -45,6 +45,29 @@ class Dataset(Dataset):
     def __len__(self):
         return self.length
 
+def train(model, loader, optimizer, loss_fn, epochs):
+    losses = []
+    batch_index = 0
+    for e in range(epochs):
+        for in_data, out_data in loader:
+            predict = model.forward(in_data)
+            loss = loss_fn(predict, out_data)
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+            losses.append(loss.data.item())
+            batch_index += 1
+        print(f"epoch: {e+1}")
+    return losses
+
+def test(model, loader):
+    predictions = []
+    batch_index = 0
+    for in_data, out_data in loader:
+        predictions.append(model.forward(in_data).data.numpy())
+        batch_index += 1
+    return np.concatenate(predictions)
+
 # random value 0 < x < 2Pi
 def tau_rand(x):
     return random.uniform(0, 2 * math.pi)
@@ -59,7 +82,7 @@ test_data_size = 8000
 
 # No. of samples used for back propagation gradient
 batch_size = 16
-epochs = 15
+epochs = 2
 
 # hyper-parameter
 learning_rate = 1e-3
@@ -94,3 +117,7 @@ data_test = Dataset(in_data=in_data_test, out_data=out_data_test)
 
 data_loader_train = DataLoader(dataset=data_train, batch_size=batch_size, shuffle=True)
 data_loader_test = DataLoader(dataset=data_test, batch_size=len(data_test), shuffle=False)
+
+# train and test model
+losses = train(model=model, loader=data_loader_train, optimizer=optimizer, loss_fn=loss_fn, epochs=epochs)
+predictions = test(model=model, loader=data_loader_test)
