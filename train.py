@@ -8,6 +8,8 @@ from torch import optim
 from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Dataset
 
+from matplotlib import pyplot
+
 class Model(nn.Module):
     def __init__(self):
         super(Model, self).__init__()
@@ -68,6 +70,24 @@ def test(model, loader):
         batch_index += 1
     return np.concatenate(predictions)
 
+def plot_loss(losses):
+    fig = pyplot.gcf()
+    ax = pyplot.axes()
+    ax.set_xlabel("Iteration")
+    ax.set_ylabel("Loss")
+    x = list(range(len(losses)))
+    pyplot.plot(x, losses)
+    pyplot.show()
+    pyplot.close()
+
+def plot_predictions(test_data, predictions):
+    fig = pyplot.figure()
+    pyplot.scatter(test_data[:,0], test_data[:,1], marker='o', s=0.2)
+    pyplot.scatter(predictions[:,0], predictions[:,1], marker='o', s=0.3)
+    pyplot.text(-9, 0.44, "- Prediction", color="orange", fontsize=8)
+    pyplot.text(-9, 0.48, "- Test Data", color="blue", fontsize=8)
+    pyplot.show()
+
 # random value 0 < x < 2Pi
 def tau_rand(x):
     return random.uniform(0, 2 * math.pi)
@@ -121,3 +141,8 @@ data_loader_test = DataLoader(dataset=data_test, batch_size=len(data_test), shuf
 # train and test model
 losses = train(model=model, loader=data_loader_train, optimizer=optimizer, loss_fn=loss_fn, epochs=epochs)
 predictions = test(model=model, loader=data_loader_test)
+
+print("final loss:", sum(losses[-100:]) / 100)
+
+plot_loss(losses)
+plot_predictions(out_data_test, predictions)
