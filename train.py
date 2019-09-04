@@ -4,6 +4,7 @@ import numpy as np
 
 import torch
 import torch.nn as nn
+from torch import optim
 from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Dataset
 
@@ -58,6 +59,15 @@ test_data_size = 8000
 
 # No. of samples used for back propagation gradient
 batch_size = 16
+epochs = 15
+
+# hyper-parameter
+learning_rate = 1e-3
+
+# choose optimization scheme
+model = Model()
+optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+loss_fn = nn.MSELoss()
 
 # create arrays of random values 0 < x < 2Pi
 in_data_x_train = lmap(tau_rand, [0] * train_data_size)
