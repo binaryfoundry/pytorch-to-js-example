@@ -1,3 +1,4 @@
+import sys
 import random
 import math
 import numpy as np
@@ -88,6 +89,21 @@ def plot_predictions(test_data, predictions):
     pyplot.text(-9, 0.48, "- Test Data", color="blue", fontsize=8)
     pyplot.show()
 
+def js_write_layer(out_layer, layer_id=1, fnc=""):
+    out_weights = out_layer.weight.data
+    out_biases = out_layer.bias.data
+    out_count = len(out_biases)
+    output = ""
+    for i in range(out_count):
+        w = out_weights[i].tolist()
+        b = out_biases[i].flatten().tolist()
+        s = []
+        for j in range(len(w)):
+            s.append(f"{w[j]} * i{layer_id-1}_{j}")
+        ww = " + ".join(s)
+        output += f"var i{layer_id}_{i} = {fnc}(({ww}) + {b});\n"
+    return output
+
 # random value 0 < x < 2Pi
 def tau_rand(x):
     return random.uniform(0, 2 * math.pi)
@@ -146,3 +162,15 @@ print("final loss:", sum(losses[-100:]) / 100)
 
 plot_loss(losses)
 plot_predictions(out_data_test, predictions)
+
+# write model to js function
+file = open("model.js","w+")
+file.write("var tanh = Math.tanh;\n")
+file.write("function evalModel(i0_0) {\n")
+file.write(js_write_layer(model.layer0, 1, "tanh"))
+file.write(js_write_layer(model.layer1, 2, "tanh"))
+file.write(js_write_layer(model.layer2, 3, "tanh"))
+file.write(js_write_layer(model.layer3, 4))
+file.write("return [i4_0, i4_1];\n")
+file.write("}\n")
+file.close()
