@@ -34,8 +34,8 @@
           var r = canvas.height / 2;
           var x = Math.random() * Math.PI * 2;
           var prediction = evalModel(x);
-          var u = prediction[0] * r;
-          var v = prediction[1] * r;
+          var u = prediction[0] * r * 0.9;
+          var v = prediction[1] * r * 0.9;
           ctx.fillRect(u + r, v + r, 1, 1);
         }
       }
